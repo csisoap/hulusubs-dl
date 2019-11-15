@@ -45,7 +45,10 @@ if len(ens) > 0:
             lines[i] = f'\n{line_count}\n'
       read_file.seek(0)
       for line in lines:
-        read_file.write(line.replace('WEBVTT\n','').replace('.', ','))
+        if ' --> ' in line:
+          read_file.write(line.replace('.', ','))
+        else:
+          read_file.write(line.replace('WEBVTT\n', ''))
     try:
       os.rename(f'{content_id}.vtt', f'{content_id}.srt')
     except Exception as error:
