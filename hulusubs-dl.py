@@ -47,9 +47,11 @@ if len(ens) > 0:
     try:
       os.rename(f'{content_id}.vtt', f'{content_id}.srt')
     except Exception as error:
-      print('Failed to rename file.')
+      print('[Error] Failed to rename file.')
       print(error)
       exit
     print(f'Succeeded in downloading `{content_id}.srt`.')
   else:
     print(f'Succeeded in downloading `{content_id}.vtt`.')
+else:
+  print('[Error] There is no subtitle in this video.')
