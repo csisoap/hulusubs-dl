@@ -35,15 +35,17 @@ if len(ens) > 0:
     with open(f'{content_id}.vtt', 'r+') as read_file:
       lines = read_file.readlines()
       lines.pop()
-      new_line_count = 0
+      line_count = 0
       for i, num in enumerate(lines):
         if num == '\n':
-          new_line_count += 1
-          lines[i] = str(new_line_count)
+          line_count += 1
+          if line_count == 1:
+            lines[i] = f'{line_count}\n'
+          else:
+            lines[i] = f'\n{line_count}\n'
       read_file.seek(0)
       for line in lines:
-        final_line = str(line).replace('WEBVTT\n','').replace('--&gt;', '-->').replace('</p></body></html>', '').replace('.', ',')
-        read_file.write(final_line + '\n')
+        read_file.write(line.replace('WEBVTT\n','').replace('.', ','))
     try:
       os.rename(f'{content_id}.vtt', f'{content_id}.srt')
     except Exception as error:
