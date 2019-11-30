@@ -26,37 +26,38 @@ http = urllib3.PoolManager()
 r = http.request('GET', f'https://www.hulu.com/captions.xml?content_id={content_id}')
 root = ET.fromstring(r.data.decode('utf-8'))
 ens = root.findall('./en')
+vtt_url = f'https://assetshuluimcom-a.akamaihd.net/captions_webvtt/{content_id[-3:]}/{content_id}_US_en_en.vtt'
 if len(ens) > 0:
   vtt_url = ens[0].text.replace('captions', 'captions_webvtt').replace('.smi', '.vtt')
-  r = http.request('GET', vtt_url)
-  with open(f'{content_id}.vtt', "w") as vtt_file:
-    vtt_file.write(r.data.decode('utf-8'))
-  if is_srt:
-    with open(f'{content_id}.vtt', 'r+') as read_file:
-      lines = read_file.readlines()
-      lines.pop()
-      line_count = 0
-      for i, num in enumerate(lines):
-        if num == '\n':
-          line_count += 1
-          if line_count == 1:
-            lines[i] = f'{line_count}\n'
-          else:
-            lines[i] = f'\n{line_count}\n'
-      read_file.seek(0)
-      for line in lines:
-        if ' --> ' in line:
-          read_file.write(line.replace('.', ','))
-        else:
-          read_file.write(line.replace('WEBVTT\n', ''))
-    try:
-      os.rename(f'{content_id}.vtt', f'{content_id}.srt')
-    except Exception as error:
-      print('[Error] Failed to rename file.')
-      print(error)
-      exit
-    print(f'Succeeded in downloading `{content_id}.srt`.')
-  else:
-    print(f'Succeeded in downloading `{content_id}.vtt`.')
 else:
-  print('[Error] There is no subtitle in this video.')
+  print('[Info] Could not find subtitle in this video, but trying...')
+r = http.request('GET', vtt_url)
+with open(f'{content_id}.vtt', "w") as vtt_file:
+  vtt_file.write(r.data.decode('utf-8'))
+if is_srt:
+  with open(f'{content_id}.vtt', 'r+') as read_file:
+    lines = read_file.readlines()
+    lines.pop()
+    line_count = 0
+    for i, num in enumerate(lines):
+      if num == '\n':
+        line_count += 1
+        if line_count == 1:
+          lines[i] = f'{line_count}\n'
+        else:
+          lines[i] = f'\n{line_count}\n'
+    read_file.seek(0)
+    for line in lines:
+      if ' --> ' in line:
+        read_file.write(line.replace('.', ','))
+      else:
+        read_file.write(line.replace('WEBVTT\n', ''))
+  try:
+    os.rename(f'{content_id}.vtt', f'{content_id}.srt')
+  except Exception as error:
+    print('[Error] Failed to rename file.')
+    print(error)
+    exit
+  print(f'Succeeded in downloading `{content_id}.srt`.')
+else:
+  print(f'Succeeded in downloading `{content_id}.vtt`.')
