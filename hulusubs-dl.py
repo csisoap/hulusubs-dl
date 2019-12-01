@@ -26,7 +26,7 @@ http = urllib3.PoolManager()
 r = http.request('GET', f'https://www.hulu.com/captions.xml?content_id={content_id}')
 root = ET.fromstring(r.data.decode('utf-8'))
 ens = root.findall('./en')
-vtt_url = f'https://assetshuluimcom-a.akamaihd.net/captions_webvtt/{content_id[-3:]}/{content_id}_US_en_en.vtt'
+vtt_url = f'https://assetshuluimcom-a.akamaihd.net/captions_webvtt/{int(content_id[-3:])}/{content_id}_US_en_en.vtt'
 if len(ens) > 0:
   vtt_url = ens[0].text.replace('captions', 'captions_webvtt').replace('.smi', '.vtt')
 else:
