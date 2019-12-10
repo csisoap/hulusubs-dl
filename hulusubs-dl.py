@@ -32,10 +32,10 @@ if len(ens) > 0:
 else:
   print('[Info] Could not find subtitle in this video, but trying...')
 r = http.request('GET', vtt_url)
-with open(f'{content_id}.vtt', "w") as vtt_file:
-  vtt_file.write(r.data.decode('utf-8'))
+with open(f'{content_id}.vtt', "wb") as vtt_file:
+  vtt_file.write(r.data)
 if is_srt:
-  with open(f'{content_id}.vtt', 'r+') as read_file:
+  with open(f'{content_id}.vtt', 'r+', encoding='utf-8') as read_file:
     lines = read_file.readlines()
     lines.pop()
     line_count = 0
